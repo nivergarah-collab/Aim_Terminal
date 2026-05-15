@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terminal Aim Trainer</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Lexend:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <script src="src/tailwind-config.js"></script>
+
+  <style>
+    .terminal-scroll::-webkit-scrollbar { width: 4px; }
+    .terminal-scroll::-webkit-scrollbar-track { background: transparent; }
+    .terminal-scroll::-webkit-scrollbar-thumb { background: #2ecc71; border-radius: 2px; }
+    .tools-scroll::-webkit-scrollbar { height: 4px; }
+    .tools-scroll::-webkit-scrollbar-track { background: transparent; }
+    .tools-scroll::-webkit-scrollbar-thumb { background: #3d4a3e; border-radius: 2px; }
+    .terminal-scroll, .tools-scroll { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+    .cursor-blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; user-select: none; }
+    #hint-box { display: none; }
+    #user-dropdown { display: none; }
+    #step-list { display: flex; flex-direction: column; gap: 8px; }
+    #param-box { display: block; }
+    .step-item:hover .step-tooltip { opacity: 1; visibility: visible; }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen md:h-screen flex flex-col overflow-y-auto md:overflow-hidden selection:bg-primary-container selection:text-on-primary-container font-body-md">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════════════════════ -->
+  <header class="bg-[#0a0e12] w-full border-b-2 border-[#1e2933] flex justify-between items-center px-lg py-md z-50 shrink-0">
+    <!-- Izquierda: brand + botón Pista -->
+    <div class="flex items-center gap-lg">
+      <!-- Brand (mobile) -->
+      <div class="lg:hidden flex items-center gap-sm">
+        <span class="material-symbols-outlined text-primary-container">terminal</span>
+        <span class="text-xl font-bold font-code-block text-primary-container">LINUX_LAB</span>
+      </div>
+      <!-- Pista (desktop) -->
+      <div class="hidden lg:flex flex-col relative">
+        <button id="btn-pista"
+          class="px-md py-sm border border-outline-variant bg-surface-container rounded-DEFAULT text-primary-container font-label-caps text-label-caps uppercase hover:bg-primary-container hover:text-on-primary-container transition-colors flex items-center gap-sm">
+          <span class="material-symbols-outlined text-sm">lightbulb</span>
+          Pista
+        </button>
+        <div id="hint-box"
+          class="absolute top-full left-0 mt-xs w-72 bg-surface-container border border-outline-variant rounded-DEFAULT p-md shadow-lg z-50 font-body-md text-body-md text-on-surface text-sm">
+        </div>
+      </div>
+      <!-- Solución (desktop) -->
+      <div class="hidden lg:flex flex-col relative">
+        <button id="btn-solucion"
+          class="px-md py-sm border border-outline-variant bg-surface-container rounded-DEFAULT text-on-surface-variant font-label-caps text-label-caps uppercase hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center gap-sm">
+          <span class="material-symbols-outlined text-sm">visibility</span>
+          Solución
+        </button>
+        <div id="solucion-confirm"
+          class="hidden absolute top-full left-0 mt-xs bg-surface-container border border-outline-variant rounded-DEFAULT p-md shadow-lg z-50 whitespace-nowrap">
+          <p class="text-on-surface font-body-md text-sm mb-sm">¿Seguro? Se resolverá automáticamente.</p>
+          <div class="flex gap-sm">
+            <button id="btn-solucion-si"
+              class="px-sm py-xs bg-primary-container text-on-primary-container rounded text-xs font-label-caps uppercase hover:opacity-80 transition-opacity">
+              Sí, mostrar
+            </button>
+            <button id="btn-solucion-no"
+              class="px-sm py-xs bg-surface border border-outline-variant text-on-surface rounded text-xs font-label-caps uppercase hover:bg-surface-container transition-colors">
+              No
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Derecha: undo, redo, print, usuario -->
+    <div class="flex items-center gap-lg">
+      <div class="flex items-center gap-sm">
+        <button id="btn-undo" title="Deshacer"
+          class="p-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-DEFAULT transition-colors">
+          <span class="material-symbols-outlined">undo</span>
+        </button>
+        <button id="btn-redo" title="Rehacer" disabled
+          class="p-sm text-surface-bright cursor-not-allowed rounded-DEFAULT opacity-40">
+          <span class="material-symbols-outlined">redo</span>
+        </button>
+        <button id="btn-print" title="Descargar log"
+          class="p-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-DEFAULT transition-colors">
+          <span class="material-symbols-outlined">print</span>
+        </button>
+        <button id="btn-report-bug" title="Enviar bug"
+          class="p-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-DEFAULT transition-colors">
+          <span class="material-symbols-outlined">bug_report</span>
+        </button>
+      </div>
+
+      <!-- Avatar + dropdown -->
+      <div class="relative">
+        <button id="btn-user"
+          class="flex items-center gap-sm p-xs rounded-full hover:bg-surface-container transition-colors border border-transparent hover:border-outline-variant">
+          <div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-xl">person</span>
+          </div>
+          <span id="header-username" class="hidden md:block font-body-md text-sm text-on-surface-variant mr-sm">usuario</span>
+        </button>
+        <div id="user-dropdown"
+          class="absolute right-0 top-full mt-xs w-52 bg-surface-container border border-outline-variant rounded-DEFAULT shadow-lg z-50">
+          <div class="p-md flex flex-col items-center gap-sm border-b border-outline-variant">
+            <div class="w-14 h-14 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center">
+              <span class="material-symbols-outlined text-4xl text-on-surface-variant">person</span>
+            </div>
+            <span id="dropdown-username" class="font-body-md text-on-surface">usuario</span>
+          </div>
+          <div class="py-sm">
+            <a href="settings.html"
+              class="flex items-center gap-md px-md py-sm text-on-surface hover:bg-surface-bright transition-colors">
+              <span class="material-symbols-outlined text-sm">settings</span>
+              <span class="font-body-md text-sm">Settings</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BODY: sidebar + main
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="flex flex-1 md:overflow-hidden">
+
+    <!-- Sidebar izquierdo (solo desktop) -->
+    <aside class="hidden lg:flex flex-col w-64 h-full bg-surface border-r-2 border-surface-container shrink-0">
+      <div class="p-lg border-b border-surface-container flex flex-col gap-sm">
+        <div class="flex items-center gap-md">
+          <span class="material-symbols-outlined text-primary-container text-xl" style="font-variation-settings:'FILL' 1">account_circle</span>
+          <div>
+            <h2 id="sidebar-username" class="font-headline-md text-headline-md text-primary-container text-base">ROOT_USER</h2>
+            <p class="font-code-block text-code-block text-on-surface-variant text-xs">Level: Pro</p>
+          </div>
+        </div>
+      </div>
+      <nav class="flex-1 py-lg flex flex-col gap-xs px-sm">
+        <a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-primary-container bg-primary-container/10 border-l-4 border-primary-container font-body-md" href="#">
+          <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">terminal</span>
+          Simulator
+        </a>
+        <a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container transition-colors font-body-md" href="lessons.html">
+          <span class="material-symbols-outlined">menu_book</span>
+          Lessons
+        </a>
+        <a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container transition-colors font-body-md" href="manual.html">
+          <span class="material-symbols-outlined">library_books</span>
+          Manual
+        </a>
+        <a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container transition-colors font-body-md" href="settings.html">
+          <span class="material-symbols-outlined">settings</span>
+          Settings
+        </a>
+      </nav>
+      <div class="p-lg border-t border-surface-container">
+        <div class="font-code-block text-code-block text-primary-container text-xs">LINUX_LAB v1.0</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 flex flex-col md:h-full md:overflow-hidden relative">
+
+      <!-- Dos columnas -->
+      <div class="flex-1 flex flex-col md:flex-row md:overflow-hidden">
+
+        <!-- ── COLUMNA IZQUIERDA: terminal (60%) ── -->
+        <div class="w-full md:w-[60%] p-md lg:p-lg flex flex-col md:h-full md:overflow-hidden bg-background">
+
+          <!-- Terminal container -->
+          <div class="h-[58vh] md:h-auto md:flex-1 bg-surface border border-surface-container rounded-lg flex flex-col overflow-hidden relative md:min-h-0">
+
+            <!-- Terminal header bar -->
+            <div class="h-8 bg-surface-container border-b border-outline-variant flex items-center px-md gap-sm shrink-0">
+              <div class="w-3 h-3 rounded-full bg-error-container"></div>
+              <div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+              <div class="w-3 h-3 rounded-full bg-primary-container/40"></div>
+              <div class="ml-auto font-label-caps text-label-caps text-on-surface-variant">bash — 80×24</div>
+            </div>
+
+            <!-- Terminal output -->
+            <div id="terminal-output"
+              class="flex-1 p-md overflow-y-auto terminal-scroll font-code-block text-code-block text-on-surface min-h-0">
+              <!-- Las líneas se generan por main.js -->
+            </div>
+
+            <!-- Input oculto — captura de teclado -->
+            <input id="terminal-input" type="text" autocomplete="off" spellcheck="false"
+              class="sr-only" aria-label="terminal input" />
+
+            <!-- ── Nano overlay (se superpone al terminal) ──── -->
+            <div id="nano-overlay" class="hidden absolute inset-0 z-10 flex flex-col rounded-lg overflow-hidden bg-surface text-on-surface font-code-block text-code-block">
+
+              <!-- Barra superior -->
+              <div class="flex items-center justify-between px-3 py-0.5 shrink-0 bg-surface-container border-b border-outline-variant">
+                <span class="text-on-surface-variant text-xs">GNU nano 5.6</span>
+                <span id="nano-filename" class="font-bold truncate max-w-xs text-primary-container text-xs"></span>
+                <span id="nano-modified" class="text-xs text-secondary-container"></span>
+              </div>
+
+              <!-- Área de edición -->
+              <textarea
+                id="nano-textarea"
+                class="flex-1 w-full resize-none outline-none px-3 py-2 bg-surface text-on-surface font-code-block text-code-block leading-5"
+                spellcheck="false"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+              ></textarea>
+
+              <!-- Barra de estado -->
+              <div id="nano-status" class="px-3 py-0.5 text-xs text-center shrink-0 h-5 bg-surface text-secondary-container"></div>
+
+              <!-- Atajos fila 1 -->
+              <div class="flex flex-wrap justify-center gap-x-4 px-2 py-0.5 shrink-0 text-xs bg-surface-container text-on-surface-variant border-t border-outline-variant">
+                <span><span class="text-primary-container font-bold">^G</span> Ayuda</span>
+                <span><span class="text-primary-container font-bold">^O</span> Guardar</span>
+                <span><span class="text-primary-container font-bold">^W</span> Buscar</span>
+                <span><span class="text-primary-container font-bold">^K</span> Cortar</span>
+                <span><span class="text-primary-container font-bold">^C</span> Posición</span>
+                <span><span class="text-primary-container font-bold">^X</span> Salir</span>
+              </div>
+
+              <!-- Atajos fila 2 -->
+              <div class="flex flex-wrap justify-center gap-x-4 px-2 py-0.5 shrink-0 text-xs bg-surface-container text-on-surface-variant border-t border-outline-variant/40">
+                <span><span class="text-primary-container font-bold">^X</span> Salir</span>
+                <span><span class="text-primary-container font-bold">^R</span> Leer</span>
+                <span><span class="text-primary-container font-bold">^\</span> Reemplazar</span>
+                <span><span class="text-primary-container font-bold">^U</span> Pegar</span>
+                <span><span class="text-primary-container font-bold">^J</span> Justificar</span>
+                <span><span class="text-primary-container font-bold">^_</span> Ir a línea</span>
+              </div>
+
+            </div>
+            <!-- ── Fin nano overlay ──────────────────────────── -->
+
+            <!-- Overlay borde interno -->
+            <div class="absolute inset-0 pointer-events-none border border-white/5 rounded-lg"></div>
+          </div>
+
+          <!-- Barra de herramientas -->
+          <div class="mt-md shrink-0">
+            <div class="flex items-center justify-between mb-sm">
+              <h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Listas de herramientas</h3>
+              <button id="btn-toggle-tools" title="Mostrar / ocultar herramientas"
+                class="p-xs text-on-surface-variant hover:text-primary-container transition-colors rounded">
+                <span class="material-symbols-outlined text-lg">expand_less</span>
+              </button>
+            </div>
+            <div id="tools-bar" class="flex flex-wrap gap-sm overflow-x-auto tools-scroll pb-xs">
+              <!-- Botones generados por main.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ── COLUMNA DERECHA: info (40%) ── -->
+        <div class="w-full md:w-[40%] bg-surface border-l border-surface-container md:overflow-y-auto md:terminal-scroll pb-20 md:pb-0">
+          <div class="p-lg flex flex-col gap-lg">
+
+            <!-- Premisa -->
+            <section class="bg-surface-container p-md rounded-DEFAULT border border-outline-variant">
+              <div class="flex items-center justify-between mb-sm">
+                <h2 class="font-headline-md text-headline-md text-primary-container font-bold">Premisa</h2>
+                <div class="flex items-center gap-sm">
+                  <button id="btn-reset-exercise" title="Reiniciar ejercicio"
+                    class="p-xs text-on-surface-variant hover:text-primary-container transition-colors rounded">
+                    <span class="material-symbols-outlined text-lg">undo</span>
+                  </button>
+                  <button id="btn-prev-exercise" title="Ejercicio anterior"
+                    class="p-xs text-on-surface-variant hover:text-primary-container transition-colors rounded">
+                    <span class="material-symbols-outlined text-lg">chevron_left</span>
+                  </button>
+                  <span id="exercise-counter"
+                    class="font-code-block text-xs text-on-surface-variant select-none cursor-pointer hover:text-primary-container transition-colors"
+                    title="Click para ir a un ejercicio">#1</span>
+                  <input id="exercise-jump-input"
+                    class="hidden font-code-block text-xs text-on-surface-variant bg-transparent border-none outline-none shadow-none ring-0 w-8 text-center p-0 m-0"
+                    type="text" inputmode="numeric" pattern="[0-9]*" style="box-shadow:none" />
+                  <button id="btn-next-exercise" title="Ejercicio siguiente"
+                    class="p-xs text-on-surface-variant hover:text-primary-container transition-colors rounded">
+                    <span class="material-symbols-outlined text-lg">chevron_right</span>
+                  </button>
+                  <button id="btn-shuffle-exercise" title="Ejercicio aleatorio"
+                    class="p-xs text-on-surface-variant hover:text-primary-container transition-colors rounded">
+                    <span class="material-symbols-outlined text-lg">shuffle</span>
+                  </button>
+                </div>
+              </div>
+              <p id="premisa-text" class="font-body-md text-body-md text-on-surface whitespace-pre-wrap">
+                Cargando ejercicio...
+              </p>
+            </section>
+
+            <!-- Paso a Paso -->
+            <section>
+              <div class="flex items-center justify-between mb-md">
+                <h2 class="font-headline-md text-headline-md text-on-surface">Paso a Paso</h2>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input id="toggle-steps" type="checkbox" checked class="sr-only peer" />
+                  <div class="w-9 h-5 bg-surface-container border border-outline-variant rounded-full peer
+                    peer-checked:bg-primary-container
+                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                    after:bg-on-surface after:border after:border-outline-variant after:rounded-full
+                    after:h-4 after:w-4 after:transition-all
+                    peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
+                </label>
+              </div>
+              <div id="step-list" class="flex flex-col gap-sm relative before:absolute before:inset-y-0 before:left-3 before:w-px before:bg-surface-container">
+                <!-- Pasos generados por main.js -->
+              </div>
+              <div id="step-complete" class="hidden mt-md p-md bg-primary-container/10 border border-primary-container/40 rounded-DEFAULT flex items-center gap-sm">
+                <span class="material-symbols-outlined text-primary-container" style="font-variation-settings:'FILL' 1">check_circle</span>
+                <span class="font-label-caps text-label-caps text-primary-container uppercase tracking-wider">Ejercicio completado</span>
+              </div>
+            </section>
+
+            <!-- Mostrar parámetros -->
+            <section class="mt-md">
+              <div class="flex items-center gap-sm mb-md">
+                <input id="toggle-params" type="checkbox" checked
+                  class="w-4 h-4 bg-surface-container border-outline-variant rounded text-primary-container focus:ring-primary-container focus:ring-offset-surface cursor-pointer" />
+                <label for="toggle-params" class="font-body-md text-body-md text-on-surface cursor-pointer select-none">
+                  Mostrar parámetros
+                </label>
+              </div>
+              <div id="param-box"
+                class="bg-surface border border-outline-variant rounded-DEFAULT p-md font-code-block text-code-block">
+                <div id="param-content" class="text-on-surface-variant text-sm">
+                  Escribe un comando o haz clic en un botón de herramientas.
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+     </main>
+   </div>
+
+   <!-- ── Modal Reporte de Bug ──────────────────────────────────── -->
+   <div id="bug-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+     <div class="bg-surface border border-outline-variant rounded-lg w-full max-w-lg shadow-2xl flex flex-col overflow-hidden">
+       <div class="px-md py-sm bg-surface-container border-b border-outline-variant flex items-center justify-between">
+         <h3 class="font-headline-md text-headline-md text-primary-container flex items-center gap-sm">
+           <span class="material-symbols-outlined text-sm">bug_report</span>
+           Reportar Error
+         </h3>
+         <button id="btn-close-bug" class="text-on-surface-variant hover:text-on-surface transition-colors">
+           <span class="material-symbols-outlined">close</span>
+         </button>
+       </div>
+       <div class="p-md flex flex-col gap-md">
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+           <div class="flex flex-col gap-xs">
+             <label class="text-xs font-label-caps text-on-surface-variant uppercase">ID Ejercicio</label>
+             <input id="bug-ej-id" type="text" placeholder="Ej: 42" 
+               class="bg-surface border border-outline-variant rounded px-sm py-xs text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none" />
+           </div>
+           <div class="flex flex-col gap-xs">
+             <label class="text-xs font-label-caps text-on-surface-variant uppercase">Gravedad</label>
+             <select id="bug-severity" 
+               class="bg-surface border border-outline-variant rounded px-sm py-xs text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none">
+               <option value="low">Baja</option>
+               <option value="medium" selected>Media</option>
+               <option value="high">Alta</option>
+               <option value="critical">Crítica</option>
+             </select>
+           </div>
+         </div>
+         <div class="flex flex-col gap-xs">
+           <label class="text-xs font-label-caps text-on-surface-variant uppercase">Descripción del problema</label>
+           <textarea id="bug-desc" rows="3" placeholder="¿Qué está pasando?" 
+             class="bg-surface border border-outline-variant rounded px-sm py-xs text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none resize-none"></textarea>
+         </div>
+         <div class="flex flex-col gap-xs">
+           <label class="text-xs font-label-caps text-on-surface-variant uppercase">Pasos para reproducir</label>
+           <textarea id="bug-steps" rows="3" placeholder="1. Abrir ej X... 2. Escribir comando Y..." 
+             class="bg-surface border border-outline-variant rounded px-sm py-xs text-sm text-on-surface focus:ring-1 focus:ring-primary-container outline-none resize-none"></textarea>
+         </div>
+       </div>
+       <div class="px-md py-sm bg-surface-container border-t border-outline-variant flex justify-end gap-sm">
+         <button id="btn-cancel-bug" 
+           class="px-md py-xs text-on-surface-variant hover:text-on-surface text-xs font-label-caps uppercase transition-colors">
+           Cancelar
+         </button>
+         <button id="btn-submit-bug" 
+           class="px-md py-xs bg-primary-container text-on-primary-container rounded text-xs font-label-caps uppercase hover:opacity-80 transition-opacity">
+           Copiar y Abrir GitHub
+         </button>
+       </div>
+     </div>
+   </div>
+
+   <!-- Bottom nav (mobile) -->
+
+  <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-surface border-t-2 border-surface-container flex justify-center gap-8 items-center px-4 py-3">
+    <a class="flex flex-col items-center text-primary-container" href="#">
+      <span class="material-symbols-outlined mb-1" style="font-variation-settings:'FILL' 1">terminal</span>
+      <span class="font-code-block text-xs uppercase">Sim</span>
+    </a>
+    <a class="flex flex-col items-center text-on-surface-variant hover:text-primary-container transition-colors" href="#">
+      <span class="material-symbols-outlined mb-1">menu_book</span>
+      <span class="font-code-block text-xs uppercase">Les</span>
+    </a>
+    <a class="flex flex-col items-center text-on-surface-variant hover:text-primary-container transition-colors" href="settings.html">
+      <span class="material-symbols-outlined mb-1">settings</span>
+      <span class="font-code-block text-xs uppercase">Set</span>
+    </a>
+  </nav>
+
+  <script src="data/ejercicios-nav.js"></script>
+  <script src="data/ejercicios-permisos.js"></script>
+  <script src="data/ejercicios-admin.js"></script>
+  <script src="data/ejercicios-manipulacion.js"></script>
+  <script src="data/ejercicios-compresion.js"></script>
+  <script src="data/ejercicios-info.js"></script>
+  <script src="data/ejercicios-variables.js"></script>
+  <script src="data/ejercicios-clase.js"></script>
+  <script src="data/ejercicios-mix.js"></script>
+  <script src="data/ejercicios-discos.js"></script>
+  <script src="ejercicios.js"></script>
+  <script src="settings.js"></script>
+  <script src="src/vfs.js"></script>
+  <script src="src/users.js"></script>
+  <script src="src/terminal-parser.js"></script>
+  <script src="src/terminal-commands.js"></script>
+  <script src="src/terminal.js"></script>
+  <script src="src/tool-commands.js"></script>
+  <script src="src/step-validator.js"></script>
+  <script src="src/exercise-nav.js"></script>
+  <script src="src/undo.js"></script>
+  <script src="src/nano.js"></script>
+  <script src="src/ui.js"></script>
+</body>
+</html>

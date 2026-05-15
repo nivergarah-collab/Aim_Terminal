@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lessons — Terminal Aim Trainer</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Lexend:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <script src="src/tailwind-config.js"></script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #09100a; }
+    ::-webkit-scrollbar-thumb { background: #1e2933; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2ecc71; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; user-select: none; }
+  </style>
+</head>
+<body class="bg-background text-on-background h-screen flex flex-col overflow-hidden selection:bg-primary-container selection:text-on-primary-container font-body-md">
+
+  <!-- HEADER -->
+  <header class="bg-[#0a0e12] w-full border-b-2 border-[#1e2933] flex justify-between items-center px-lg py-md z-50 shrink-0">
+    <div class="flex items-center gap-sm">
+      <span class="material-symbols-outlined text-primary-container">terminal</span>
+      <span class="text-xl font-bold font-code-block text-primary-container">LINUX_LAB</span>
+    </div>
+    <div class="flex items-center gap-lg">
+      <a href="index.html"
+        class="flex items-center gap-sm p-xs rounded-full hover:bg-surface-container transition-colors border border-transparent hover:border-outline-variant">
+        <div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-surface-variant text-xl">person</span>
+        </div>
+        <span class="hidden md:block font-body-md text-sm text-on-surface-variant mr-sm">usuario</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- Sidebar (desktop) -->
+    <aside class="hidden lg:flex flex-col w-64 h-full bg-[#0a0e12] border-r-2 border-[#1e2933] shrink-0">
+      <div class="p-lg border-b border-[#1e2933] flex items-center gap-sm">
+        <span class="material-symbols-outlined text-primary-container text-xl" style="font-variation-settings:'FILL' 1">account_circle</span>
+        <div>
+          <h2 class="font-headline-md text-headline-md text-on-surface text-base">ROOT_USER</h2>
+          <p class="font-code-block text-code-block text-on-surface-variant text-xs">Level: Pro</p>
+        </div>
+      </div>
+      <nav class="flex-1 py-sm flex flex-col gap-xs">
+        <a href="index.html" class="flex items-center gap-md px-lg py-sm font-body-md text-on-surface-variant hover:bg-[#0f1419] transition-colors">
+          <span class="material-symbols-outlined text-lg">terminal</span>Simulator
+        </a>
+        <a href="lessons.html" class="flex items-center gap-md px-lg py-sm font-body-md text-primary-container bg-primary-container/10 border-l-4 border-primary-container">
+          <span class="material-symbols-outlined text-lg" style="font-variation-settings:'FILL' 1">menu_book</span>Lessons
+        </a>
+        <a href="manual.html" class="flex items-center gap-md px-lg py-sm font-body-md text-on-surface-variant hover:bg-[#0f1419] transition-colors">
+          <span class="material-symbols-outlined text-lg">library_books</span>Manual
+        </a>
+        <a href="settings.html" class="flex items-center gap-md px-lg py-sm font-body-md text-on-surface-variant hover:bg-[#0f1419] transition-colors">
+          <span class="material-symbols-outlined text-lg">settings</span>Settings
+        </a>
+      </nav>
+      <div class="p-lg border-t border-surface-container">
+        <div class="font-code-block text-code-block text-primary-container text-xs">LINUX_LAB v1.0</div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 overflow-y-auto bg-surface-container-lowest p-margin">
+      <div class="max-w-4xl mx-auto">
+
+        <h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs tracking-tight">Lessons</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-xl">
+          Ejercicios estructurados para practicar en el simulador.
+        </p>
+
+        <!-- Sección: Ejercicios de aula -->
+        <section class="mb-xl">
+          <h2 class="font-headline-md text-headline-md text-on-surface mb-md flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary-container">school</span>
+            Ejercicios de aula
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
+
+            <!-- Tarjeta: Ejercicio_clase 02.01_Ejercicio2 -->
+            <a href="index.html?ej=51"
+              class="group flex flex-col bg-surface-container border border-outline-variant rounded-xl p-md hover:border-primary-container hover:bg-surface-container-high transition-colors cursor-pointer">
+              <div class="flex items-center gap-sm mb-sm">
+                <span class="material-symbols-outlined text-primary-container text-2xl" style="font-variation-settings:'FILL' 1">assignment</span>
+                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Clase 02 · Ejercicio 2</span>
+              </div>
+              <h3 class="font-headline-md text-headline-md text-on-surface text-base mb-sm group-hover:text-primary-container transition-colors">
+                Ejercicio_clase 02.01_Ejercicio2
+              </h3>
+              <p class="font-body-md text-body-md text-on-surface-variant text-sm flex-1 mb-md">
+                Colaboración controlada en Linux: usuarios, grupos y permisos.
+              </p>
+              <div class="flex flex-wrap gap-xs">
+                <span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-code-block text-xs rounded">Usuarios</span>
+                <span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-code-block text-xs rounded">Grupos</span>
+                <span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-code-block text-xs rounded">Permisos</span>
+              </div>
+            </a>
+
+            <!-- Tarjeta: Ejercicio_clase 02.02_Ejercicio1 -->
+            <a href="index.html?ej=52"
+              class="group flex flex-col bg-surface-container border border-outline-variant rounded-xl p-md hover:border-primary-container hover:bg-surface-container-high transition-colors cursor-pointer">
+              <div class="flex items-center gap-sm mb-sm">
+                <span class="material-symbols-outlined text-primary-container text-2xl" style="font-variation-settings:'FILL' 1">assignment</span>
+                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Clase 02 · Ejercicio 1</span>
+              </div>
+              <h3 class="font-headline-md text-headline-md text-on-surface text-base mb-sm group-hover:text-primary-container transition-colors">
+                Ejercicio_clase 02.02_Ejercicio1
+              </h3>
+              <p class="font-body-md text-body-md text-on-surface-variant text-sm flex-1 mb-md">
+                Manipulación de archivos, servicios con systemctl y automatización con cron.
+              </p>
+              <div class="flex flex-wrap gap-xs">
+                <span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-code-block text-xs rounded">cp · mv</span>
+                <span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-code-block text-xs rounded">systemctl</span>
+                <span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-code-block text-xs rounded">crontab</span>
+              </div>
+            </a>
+
+            <!-- Tarjeta: Ejercicio_clase 02.02_Ejercicio2 -->
+            <a href="index.html?ej=53"
+              class="group flex flex-col bg-surface-container border border-outline-variant rounded-xl p-md hover:border-primary-container hover:bg-surface-container-high transition-colors cursor-pointer">
+              <div class="flex items-center gap-sm mb-sm">
+                <span class="material-symbols-outlined text-primary-container text-2xl" style="font-variation-settings:'FILL' 1">assignment</span>
+                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Clase 02 · Ejercicio 2</span>
+              </div>
+              <h3 class="font-headline-md text-headline-md text-on-surface text-base mb-sm group-hover:text-primary-container transition-colors">
+                Ejercicio_clase 02.02_Ejercicio2
+              </h3>
+              <p class="font-body-md text-body-md text-on-surface-variant text-sm flex-1 mb-md">
+                Desafío: automatizar tareas de archivos, gestión de directorios y cron.
+              </p>
+              <div class="flex flex-wrap gap-xs">
+                <span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-code-block text-xs rounded">mkdir · cp · mv</span>
+                <span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-code-block text-xs rounded">yum · systemctl</span>
+                <span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-code-block text-xs rounded">crontab</span>
+              </div>
+            </a>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+</body>
+</html>

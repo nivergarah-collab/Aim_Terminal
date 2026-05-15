@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manual — Terminal Aim Trainer</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Lexend:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <script src="src/tailwind-config.js"></script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #09100a; }
+    ::-webkit-scrollbar-thumb { background: #1e2933; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2ecc71; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; user-select: none; }
+
+    /* Man page block */
+    .man-page {
+      font-family: "Fira Code", monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #dce5da;
+    }
+    .man-header {
+      display: flex;
+      justify-content: space-between;
+      color: #bbcbbb;
+      margin-bottom: 1.2em;
+      font-size: 12px;
+    }
+    .man-section {
+      font-weight: 700;
+      color: #dce5da;
+      margin-top: 1em;
+      margin-bottom: 0.2em;
+      letter-spacing: 0.03em;
+    }
+    .man-indent { padding-left: 2em; }
+    .man-flag  { color: #2ecc71; }
+    .man-cmd   { color: #2ecc71; }
+    .man-desc  { color: #bbcbbb; }
+    .man-example-cmd  { padding-left: 2em; color: #2ecc71; }
+    .man-example-desc { padding-left: 4em; color: #bbcbbb; }
+
+    /* Search highlight */
+    mark { background: #2ecc7133; color: #2ecc71; border-radius: 2px; }
+
+    /* Chip index */
+    .cmd-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: 4px;
+      border: 1px solid #3d4a3e;
+      background: #1a211b;
+      color: #2ecc71;
+      font-family: "Fira Code", monospace;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .cmd-chip:hover { background: #242c25; border-color: #2ecc71; }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col overflow-y-auto selection:bg-primary-container selection:text-on-primary-container font-body-md">
+
+  <!-- HEADER -->
+  <header class="bg-[#0a0e12] w-full border-b-2 border-[#1e2933] flex justify-between items-center px-lg py-md z-50 shrink-0">
+    <div class="flex items-center gap-sm">
+      <span class="material-symbols-outlined text-primary-container">terminal</span>
+      <span class="text-xl font-bold font-code-block text-primary-container">LINUX_LAB</span>
+    </div>
+    <a href="index.html"
+      class="flex items-center gap-sm p-xs rounded-full hover:bg-surface-container transition-colors border border-transparent hover:border-outline-variant">
+      <div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-surface-variant text-xl">person</span>
+      </div>
+      <span class="hidden md:block font-body-md text-sm text-on-surface-variant mr-sm">usuario</span>
+    </a>
+  </header>
+
+  <!-- BODY -->
+  <div class="flex flex-1">
+
+    <!-- Sidebar (desktop) -->
+    <aside class="hidden lg:flex flex-col w-64 bg-[#0a0e12] border-r-2 border-[#1e2933] shrink-0">
+      <div class="p-lg border-b border-[#1e2933] flex items-center gap-sm">
+        <span class="material-symbols-outlined text-primary-container text-xl" style="font-variation-settings:'FILL' 1">account_circle</span>
+        <div>
+          <h2 class="font-headline-md text-headline-md text-on-surface text-base">ROOT_USER</h2>
+          <p class="font-code-block text-code-block text-on-surface-variant text-xs">Level: Pro</p>
+        </div>
+      </div>
+      <nav class="flex-1 py-sm flex flex-col gap-xs">
+        <a href="index.html" class="flex items-center gap-md px-lg py-sm font-body-md text-on-surface-variant hover:bg-[#0f1419] transition-colors">
+          <span class="material-symbols-outlined text-lg">terminal</span>Simulator
+        </a>
+        <a href="lessons.html" class="flex items-center gap-md px-lg py-sm font-body-md text-on-surface-variant hover:bg-[#0f1419] transition-colors">
+          <span class="material-symbols-outlined text-lg">menu_book</span>Lessons
+        </a>
+        <a href="manual.html" class="flex items-center gap-md px-lg py-sm font-body-md text-primary-container bg-primary-container/10 border-l-4 border-primary-container">
+          <span class="material-symbols-outlined text-lg" style="font-variation-settings:'FILL' 1">library_books</span>Manual
+        </a>
+        <a href="settings.html" class="flex items-center gap-md px-lg py-sm font-body-md text-on-surface-variant hover:bg-[#0f1419] transition-colors">
+          <span class="material-symbols-outlined text-lg">settings</span>Settings
+        </a>
+      </nav>
+      <div class="p-lg border-t border-surface-container">
+        <div class="font-code-block text-code-block text-primary-container text-xs">LINUX_LAB v1.0</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 overflow-y-auto bg-surface-container-lowest">
+      <div class="max-w-3xl mx-auto px-md py-lg lg:px-margin lg:py-xl pb-24 lg:pb-xl">
+
+        <h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs tracking-tight">Manual</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-lg">
+          Referencia de comandos en formato <span class="font-code-block text-primary-container">man</span>. Escribe el nombre de un comando para ver su documentación.
+        </p>
+
+        <!-- Buscador -->
+        <div class="relative mb-lg">
+          <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">search</span>
+          <input
+            id="man-search"
+            type="text"
+            placeholder="Buscar comando... (ej: ls, chmod, grep)"
+            autocomplete="off"
+            spellcheck="false"
+            class="w-full bg-surface-container border border-outline-variant rounded-lg pl-10 pr-md py-sm font-code-block text-code-block text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container transition-colors"
+          />
+          <button id="man-clear" class="hidden absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
+            <span class="material-symbols-outlined text-lg">close</span>
+          </button>
+        </div>
+
+        <!-- Índice de comandos (visible cuando no hay búsqueda) -->
+        <div id="man-index">
+          <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-sm">Comandos disponibles</p>
+          <div id="man-chips" class="flex flex-wrap gap-sm"></div>
+        </div>
+
+        <!-- Resultados man -->
+        <div id="man-results" class="hidden flex flex-col gap-lg"></div>
+
+        <!-- Sin resultados -->
+        <div id="man-empty" class="hidden text-center py-xl">
+          <p class="font-code-block text-code-block text-on-surface-variant">No manual entry for <span id="man-empty-cmd" class="text-primary-container"></span></p>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Bottom nav (mobile) -->
+  <nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 bg-surface border-t-2 border-surface-container flex justify-center gap-8 items-center px-4 py-3">
+    <a class="flex flex-col items-center text-on-surface-variant hover:text-primary-container transition-colors" href="index.html">
+      <span class="material-symbols-outlined mb-1">terminal</span>
+      <span class="font-code-block text-xs uppercase">Sim</span>
+    </a>
+    <a class="flex flex-col items-center text-on-surface-variant hover:text-primary-container transition-colors" href="lessons.html">
+      <span class="material-symbols-outlined mb-1">menu_book</span>
+      <span class="font-code-block text-xs uppercase">Les</span>
+    </a>
+    <a class="flex flex-col items-center text-primary-container" href="manual.html">
+      <span class="material-symbols-outlined mb-1" style="font-variation-settings:'FILL' 1">library_books</span>
+      <span class="font-code-block text-xs uppercase">Man</span>
+    </a>
+    <a class="flex flex-col items-center text-on-surface-variant hover:text-primary-container transition-colors" href="settings.html">
+      <span class="material-symbols-outlined mb-1">settings</span>
+      <span class="font-code-block text-xs uppercase">Set</span>
+    </a>
+  </nav>
+
+  <script src="src/tool-commands.js"></script>
+  <script>
+    const searchInput = document.getElementById('man-search');
+    const clearBtn    = document.getElementById('man-clear');
+    const indexEl     = document.getElementById('man-index');
+    const chipsEl     = document.getElementById('man-chips');
+    const resultsEl   = document.getElementById('man-results');
+    const emptyEl     = document.getElementById('man-empty');
+    const emptyCmdEl  = document.getElementById('man-empty-cmd');
+
+    function esc(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function highlight(str, query) {
+      if (!query) return esc(str);
+      const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      return esc(str).replace(re, '<mark>$1</mark>');
+    }
+
+    function renderManPage(cmd, query) {
+      const name = cmd.cmd.toUpperCase();
+      const optionsHtml = (cmd.options || []).map(o =>
+        `<div class="man-indent"><span class="man-flag">${esc(o.flag)}</span></div>` +
+        `<div style="padding-left:3em" class="man-desc">${esc(o.desc)}</div>`
+      ).join('');
+
+      const examplesHtml = (cmd.examples || []).map(e =>
+        `<div class="man-example-cmd">${highlight(e.cmd, query)}</div>` +
+        `<div class="man-example-desc">${esc(e.desc)}</div>`
+      ).join('');
+
+      return `
+        <article class="man-page bg-surface-container border border-outline-variant rounded-lg p-md lg:p-lg">
+          <div class="man-header">
+            <span>${name}(1)</span>
+            <span>Comandos de usuario</span>
+            <span>${name}(1)</span>
+          </div>
+
+          <div class="man-section">NOMBRE</div>
+          <div class="man-indent">
+            <span class="man-cmd">${highlight(cmd.cmd, query)}</span>
+            <span class="man-desc"> – ${esc(cmd.desc)}</span>
+          </div>
+
+          ${cmd.synopsis ? `
+          <div class="man-section">SINOPSIS</div>
+          <div class="man-indent man-flag">${esc(cmd.synopsis)}</div>
+          ` : ''}
+
+          ${optionsHtml ? `
+          <div class="man-section">OPCIONES</div>
+          ${optionsHtml}
+          ` : ''}
+
+          ${examplesHtml ? `
+          <div class="man-section">EJEMPLOS</div>
+          ${examplesHtml}
+          ` : ''}
+        </article>
+      `;
+    }
+
+    function renderIndex() {
+      chipsEl.innerHTML = TOOL_COMMANDS
+        .map(c => `<button class="cmd-chip" data-cmd="${esc(c.cmd)}">${esc(c.cmd)}</button>`)
+        .join('');
+      chipsEl.querySelectorAll('.cmd-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          searchInput.value = btn.dataset.cmd;
+          searchInput.dispatchEvent(new Event('input'));
+          searchInput.focus();
+        });
+      });
+    }
+
+    function update() {
+      const q = searchInput.value.trim().toLowerCase();
+      clearBtn.classList.toggle('hidden', !q);
+
+      if (!q) {
+        indexEl.classList.remove('hidden');
+        resultsEl.classList.add('hidden');
+        emptyEl.classList.add('hidden');
+        return;
+      }
+
+      indexEl.classList.add('hidden');
+
+      const matches = TOOL_COMMANDS.filter(c =>
+        c.cmd.toLowerCase().includes(q) ||
+        c.desc?.toLowerCase().includes(q)
+      );
+
+      if (!matches.length) {
+        resultsEl.classList.add('hidden');
+        emptyEl.classList.remove('hidden');
+        emptyCmdEl.textContent = searchInput.value.trim();
+        return;
+      }
+
+      emptyEl.classList.add('hidden');
+      resultsEl.classList.remove('hidden');
+      resultsEl.innerHTML = matches.map(c => renderManPage(c, q)).join('');
+    }
+
+    searchInput.addEventListener('input', update);
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      update();
+      searchInput.focus();
+    });
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { searchInput.value = ''; update(); }
+    });
+
+    // Focus search on load and support ?cmd= URL param
+    renderIndex();
+    const urlCmd = new URLSearchParams(window.location.search).get('cmd');
+    if (urlCmd) { searchInput.value = urlCmd; }
+    update();
+    if (!urlCmd) searchInput.focus();
+  </script>
+</body>
+</html>
